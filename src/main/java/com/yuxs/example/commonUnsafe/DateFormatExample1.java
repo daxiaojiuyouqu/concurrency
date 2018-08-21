@@ -5,13 +5,15 @@ import com.yuxs.annoations.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 @NotThreadSafe
-public class StringExample1 {
+public class DateFormatExample1 {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcurrencyTest.class);
 
@@ -19,7 +21,7 @@ public class StringExample1 {
 
     public static final int threadTotal = 200;
 
-    public static StringBuilder stringBuilder = new StringBuilder();
+    private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -39,10 +41,13 @@ public class StringExample1 {
         }
         countDownLatch.await();
         executorService.shutdown();
-        logger.info("len={}", stringBuilder.length());
     }
 
     private static void update() {
-        stringBuilder.append("1");
+        try {
+            dateFormat.parse("20180219");
+        } catch (ParseException e) {
+            logger.error("parse exception", e);
+        }
     }
 }
