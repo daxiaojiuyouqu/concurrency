@@ -1,7 +1,7 @@
 package com.yuxs.example.commonUnsafe;
 
 import com.yuxs.ConcurrencyTest;
-import com.yuxs.annoations.NotThreadSafe;
+import com.yuxs.annoations.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +10,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
-@NotThreadSafe
-public class StringExample1 {
+@ThreadSafe
+public class StringExample2 {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcurrencyTest.class);
 
@@ -19,7 +19,7 @@ public class StringExample1 {
 
     public static final int threadTotal = 200;
 
-    public static StringBuilder stringBuilder = new StringBuilder();
+    public static StringBuffer stringBuffer = new StringBuffer();
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -39,10 +39,9 @@ public class StringExample1 {
         }
         countDownLatch.await();
         executorService.shutdown();
-        logger.info("len={}", stringBuilder.length());
+        logger.info("len={}", stringBuffer.length());
     }
-
     private static void update() {
-        stringBuilder.append("1");
+        stringBuffer.append("1");
     }
 }

@@ -2,8 +2,13 @@ package com.yuxs.example.commonUnsafe;
 
 import com.yuxs.ConcurrencyTest;
 import com.yuxs.annoations.NotThreadSafe;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -11,7 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 @NotThreadSafe
-public class StringExample1 {
+public class DateFormatExample3 {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcurrencyTest.class);
 
@@ -19,7 +24,7 @@ public class StringExample1 {
 
     public static final int threadTotal = 200;
 
-    public static StringBuilder stringBuilder = new StringBuilder();
+    private final static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMdd");
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -39,10 +44,9 @@ public class StringExample1 {
         }
         countDownLatch.await();
         executorService.shutdown();
-        logger.info("len={}", stringBuilder.length());
     }
 
     private static void update() {
-        stringBuilder.append("1");
+        logger.info("date={}", formatter.parseDateTime("20180128").toDate());
     }
 }

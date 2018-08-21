@@ -1,17 +1,15 @@
-package com.yuxs.example.commonUnsafe;
+package com.yuxs.example.concurrent;
 
 import com.yuxs.ConcurrencyTest;
-import com.yuxs.annoations.NotThreadSafe;
+import com.yuxs.annoations.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.Set;
+import java.util.concurrent.*;
 
-@NotThreadSafe
-public class StringExample1 {
+@ThreadSafe
+public class CopyOnWriteArraySetExample {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcurrencyTest.class);
 
@@ -19,17 +17,18 @@ public class StringExample1 {
 
     public static final int threadTotal = 200;
 
-    public static StringBuilder stringBuilder = new StringBuilder();
+    private final static Set<Integer> set = new CopyOnWriteArraySet<>();
 
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
         final Semaphore semaphore = new Semaphore(threadTotal);
         final CountDownLatch countDownLatch = new CountDownLatch(clienTotal);
         for (int i = 0; i < clienTotal; i++) {
+            final int count = i;
             executorService.execute(() -> {
                 try {
                     semaphore.acquire();
-                    update();
+                    add(count);
                     semaphore.release();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -39,10 +38,10 @@ public class StringExample1 {
         }
         countDownLatch.await();
         executorService.shutdown();
-        logger.info("len={}", stringBuilder.length());
+        logger.info("size:{}", set.size());
     }
 
-    private static void update() {
-        stringBuilder.append("1");
+    private static void add(int i) {
+        set.add(i);
     }
 }
