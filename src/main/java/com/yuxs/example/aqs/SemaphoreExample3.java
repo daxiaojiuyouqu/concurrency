@@ -3,40 +3,42 @@ package com.yuxs.example.aqs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
-public class CountDownLatchExample1 {
+public class SemaphoreExample3 {
 
-    public final static Logger logger = LoggerFactory.getLogger(CountDownLatchExample1.class);
+    public final static Logger logger = LoggerFactory.getLogger(SemaphoreExample3.class);
 
-    private final static int threadCount = 200;
+    private final static int threadCount = 20;
 
+    /**
+     * 这个示例表示有20个线程,每次放行2个线程执行
+     * @param args
+     * @throws InterruptedException
+     */
     public static void main(String[] args) throws InterruptedException {
         ExecutorService exec = Executors.newCachedThreadPool();
-        final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+        final Semaphore semaphore = new Semaphore(2);
         for (int i = 0; i < threadCount; i++) {
             final int threadNum = i;
             exec.execute(() -> {
                 try {
-                    test(threadNum);
+                    if(semaphore.tryAcquire()){//如果获取到许可才执行,获取不到的请求就被丢弃了,实时的,所以下面的test()方法中如果等待了1s,那么获取不到的请求就被丢弃了
+                        test(threadNum);
+                        semaphore.release();//释放一个许可
+                    }
                 } catch (InterruptedException e) {
                     logger.error("exception", e);
-                } finally {
-                    countDownLatch.countDown();
                 }
             });
         }
-        countDownLatch.await();//需要等待countDown里面的计数器减到0才允许它下面的代码执行
-        logger.info("finish");
         exec.shutdown();
     }
 
     private static void test(int threadCount) throws InterruptedException {
-        Thread.sleep(1000);
         logger.info("{}", threadCount);
-        logger.info("我已经执行了。。。");
         Thread.sleep(1000);
     }
 }

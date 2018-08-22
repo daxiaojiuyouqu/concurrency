@@ -6,10 +6,11 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-public class CountDownLatchExample1 {
+public class CountDownLatchExample2 {
 
-    public final static Logger logger = LoggerFactory.getLogger(CountDownLatchExample1.class);
+    public final static Logger logger = LoggerFactory.getLogger(CountDownLatchExample2.class);
 
     private final static int threadCount = 200;
 
@@ -28,7 +29,7 @@ public class CountDownLatchExample1 {
                 }
             });
         }
-        countDownLatch.await();//需要等待countDown里面的计数器减到0才允许它下面的代码执行
+        countDownLatch.await(10,TimeUnit.MILLISECONDS);//支持给定时间的等待,需要注意的是虽然不等待了,但是之前给定的线程还是会执行完
         logger.info("finish");
         exec.shutdown();
     }
